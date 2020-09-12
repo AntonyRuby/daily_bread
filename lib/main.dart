@@ -9,7 +9,6 @@ import 'search.dart';
 import 'dailyMassReadings.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'bible.dart';
-// import 'chapter.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -155,9 +154,6 @@ class _MainScreenState extends State<MainScreen> {
                 daily[new DateFormat("yyyy-MM-dd").format(now)]["saint"];
             var saintOfTheDay = saints[saintName];
             var bible = json.decode(snapshot.data["bible"].toString());
-
-            // var bibleChapter = bible[chapter];
-            // var chapter =
 
             if (data == null) {
               return Center(
