@@ -143,6 +143,7 @@ class _SearchPageState extends State<SearchPage> {
                         },
                         child: Card(
                           elevation: 0,
+                          margin: EdgeInsets.all(1),
                           child: Row(
                             children: <Widget>[
                               Image.asset(filteredsaintnames[index].image,

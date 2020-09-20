@@ -4,6 +4,8 @@ import 'package:share/share.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:verses/bible.dart';
+import 'package:verses/main_landscape.dart';
+import 'package:verses/main_portrait.dart';
 import 'saintOfTheDay.dart';
 import 'search.dart';
 import 'dailyMassReadings.dart';
@@ -126,11 +128,10 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-            child: Text(
+        title: Text(
           'Thought for the day',
           style: Theme.of(context).textTheme.headline6,
-        )),
+        ),
         actions: [
           IconButton(
               icon: Icon(Icons.calendar_today),
@@ -147,224 +148,17 @@ class _MainScreenState extends State<MainScreen> {
       body: FutureBuilder(
           future: loadAssets(),
           builder: (context, snapshot) {
-            var data = json.decode(snapshot.data["verses"].toString());
-            var daily = json.decode(snapshot.data["daily"].toString());
-            var saints = json.decode(snapshot.data["saints"].toString());
-            var saintName =
-                daily[new DateFormat("yyyy-MM-dd").format(now)]["saint"];
-            var saintOfTheDay = saints[saintName];
-            var bible = json.decode(snapshot.data["bible"].toString());
-
-            if (data == null) {
+            if (snapshot.data == null) {
               return Center(
                 child: Text("Loading"),
               );
+            }
+
+            Orientation orientation = MediaQuery.of(context).orientation;
+            if (orientation == Orientation.portrait) {
+              return portrait(context, now, snapshot);
             } else {
-              return SingleChildScrollView(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 0, 0),
-                        child: Text(
-                          new DateFormat("EEEE, dd MMMM yyyy").format(now),
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 16, 16, 0),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                              alignment: Alignment.centerRight,
-                              splashColor: Colors.blueAccent,
-                              icon: Icon(
-                                Icons.share,
-                                color: Colors.blueAccent,
-                              ),
-                              onPressed: () {
-                                final RenderBox box =
-                                    context.findRenderObject();
-                                Share.share(
-                                    data[new DateFormat("yyyy-MM-dd")
-                                        .format(now)]["verse"],
-                                    sharePositionOrigin:
-                                        box.localToGlobal(Offset.zero) &
-                                            box.size);
-                              }),
-                        ),
-                      ),
-                      \\Todo
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                        child: Text(
-                          data[new DateFormat("yyyy-MM-dd").format(now)]
-                              ["verse"],
-                          style: Theme.of(context).textTheme.headline4,
-                          textAlign: TextAlign.justify,
-                          maxLines: 20,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 32, 0, 16),
-                        child: InkWell(
-                          // splashColor: Colors.blueAccent,
-                          // highlightColor: Colors.blue[100],
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Center(
-                                    child: Image(
-                                      image: AssetImage(
-                                          'asset/images/MassReadings.jpg'),
-                                      width:
-                                          MediaQuery.of(context).size.width / 9,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 8,
-                                  child: Center(
-                                    child: Text(
-                                      "Mass Readings",
-                                      style:
-                                          Theme.of(context).textTheme.subtitle2,
-                                    ),
-                                  ),
-                                )
-                              ]),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MassReadings(
-                                          dailyreadings: daily[
-                                              new DateFormat("yyyy-MM-dd")
-                                                  .format(now)]["readings"],
-                                        )));
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 32, 0, 32),
-                        child: InkWell(
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Center(
-                                      child: Image(
-                                        image: AssetImage(
-                                            'asset/images/Saint.png'),
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                10,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 8,
-                                    child: Center(
-                                      child: Text(saintName,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .subtitle2),
-                                    ),
-                                  ),
-                                ]),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Saint(saint: {
-                                            "name": saintOfTheDay["name"],
-                                            "period": saintOfTheDay["period"],
-                                            "img": "asset/images/" +
-                                                saintOfTheDay["img"],
-                                            "about": saintOfTheDay["about"]
-                                          })));
-                            }),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-                        child: Container(
-                          color: Colors.blue[700],
-                          height: 85,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              InkWell(
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image(
-                                        image: AssetImage(
-                                            'asset/images/Saint Dictionary.jpg'),
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                15,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 8, 0, 0),
-                                        child: Text(
-                                          "Saints Dictionary",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .button,
-                                        ),
-                                      ),
-                                    ]),
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              SearchPage(saintlist: saints)));
-                                },
-                              ),
-                              InkWell(
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image(
-                                        image: AssetImage(
-                                            'asset/images/bible.jpg'),
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                8,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 8, 0, 0),
-                                        child: Text(
-                                          "Holy Bible",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .button,
-                                        ),
-                                      ),
-                                    ]),
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              BookScreen(bible: bible)));
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ]),
-              );
+              return landscape(context, now, snapshot);
             }
           }),
     );
