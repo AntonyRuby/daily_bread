@@ -7,16 +7,11 @@ class BookScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<List> books = new List();
-    bible.forEach((key, value) => {
-          books.add([key, value])
-        });
-
     return Scaffold(
         appBar: AppBar(title: Text("The Holy Bible")),
         body: Container(
           child: ListView.builder(
-              itemCount: books.length,
+              itemCount: bible.length,
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
@@ -24,13 +19,21 @@ class BookScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => Chapters(
-                                book: books[index][1], name: books[index][0])));
+                                bible: bible,
+                                book: bible.keys.toList()[index])));
                   },
-                  child: Card(
-                    elevation: 0,
-                    child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(books[index][0])),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    child: Card(
+                      elevation: 0,
+                      margin: EdgeInsets.all(5),
+                      child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Text(
+                            bible.keys.toList()[index],
+                            style: Theme.of(context).textTheme.subtitle1,
+                          )),
+                    ),
                   ),
                 );
               }),
@@ -40,19 +43,19 @@ class BookScreen extends StatelessWidget {
 
 class Chapters extends StatelessWidget {
   final book;
-  final name;
-  Chapters({Key key, @required this.book, @required this.name})
+  final bible;
+  Chapters({Key key, @required this.bible, @required this.book})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List<List> chapters = new List();
-    for (var i = 0; i < book.length; i++) {
-      chapters.add(["Chapter " + (i + 1).toString(), book[i]]);
+    for (var i = 0; i < bible[book].length; i++) {
+      chapters.add(["Chapter " + (i + 1).toString(), i]);
     }
 
     return Scaffold(
-        appBar: AppBar(title: Text(name)),
+        appBar: AppBar(title: Text(book)),
         body: Container(
           child: ListView.builder(
               itemCount: chapters.length,
@@ -63,21 +66,18 @@ class Chapters extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => Verses(
-                                book: chapters[index][1],
-                                name: name + " : " + chapters[index][0],
-                                next: (index + 1) < chapters.length
-                                    ? {
-                                        book: chapters[index + 1][1],
-                                        name: chapters[index + 1][0]
-                                      }
-                                    : {name: "none"})));
+                                bible: bible, book: book, chapter: index)));
                   },
-                  child: Card(
-                    elevation: 0,
-                    child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(chapters[index][0])),
-                  ),
+                  child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      child: Card(
+                        elevation: 0,
+                        child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Text(chapters[index][0]))),
+                      )),
                 );
               }),
         ));
@@ -85,58 +85,71 @@ class Chapters extends StatelessWidget {
 }
 
 class Verses extends StatelessWidget {
+  final bible;
   final book;
-  final name;
-  final next;
+  final chapter;
   Verses(
-      {Key key, @required this.book, @required this.name, @required this.next})
+      {Key key,
+      @required this.bible,
+      @required this.book,
+      @required this.chapter})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    List<String> verses = new List();
-    book.forEach((verse) => verses.add(verse));
-    if (next["name"] != "none") {
-      book.add("Next Chapter");
+    List<List<String>> verses = new List();
+    for (var i = 0; i < bible[book][chapter].length; i++) {
+      verses.add(["Verse " + (i + 1).toString(), i.toString()]);
+    }
+
+    if (chapter < bible[book].length - 1) {
+      verses.add(["Next Chapter", ""]);
     }
 
     return Scaffold(
-        appBar: AppBar(title: Text(name)),
+        appBar: AppBar(
+            title: Text(book + " : Chapter " + (chapter + 1).toString())),
         body: Container(
           child: ListView.builder(
               itemCount: verses.length,
               itemBuilder: (BuildContext context, int index) {
-                if (verses[index] == "Next Chapter") {
+                if (verses[index][0] == "Next Chapter") {
                   return InkWell(
-                    child: Card(
-                        elevation: 0,
-                        child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Next Chapter",
-                              textAlign: TextAlign.right,
-                            ))),
+                    child: Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: Card(
+                            elevation: 0,
+                            child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 4, 16, 4),
+                                    child: Text(
+                                      "Next Chapter",
+                                      textAlign: TextAlign.right,
+                                    ))))),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => Chapters(
-                                  book: next["book"], name: next["name"])));
+                              builder: (context) => Verses(
+                                  bible: bible,
+                                  book: book,
+                                  chapter: chapter + 1)));
                     },
                   );
                 } else {
-                  return Card(
-                      elevation: 0,
-                      child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ListTile(
-                              leading: SelectableText((index + 1).toString()),
-                              title: SelectableText(
-                                verses[index],
-                                toolbarOptions: ToolbarOptions(
-                                    copy: true, paste: true, selectAll: true),
-                                style: Theme.of(context).textTheme.bodyText1,
-                              ))));
+                  return Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      child: Card(
+                          elevation: 0,
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                  leading: Text((index + 1).toString()),
+                                  subtitle: Text(bible[book][chapter]
+                                      [int.parse(verses[index][1])])))));
                 }
               }),
         ));
