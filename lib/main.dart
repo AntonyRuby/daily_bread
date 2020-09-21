@@ -173,7 +173,7 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 08, 16, 0),
+                        padding: const EdgeInsets.fromLTRB(0, 16, 16, 0),
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: IconButton(
@@ -195,6 +195,7 @@ class _MainScreenState extends State<MainScreen> {
                               }),
                         ),
                       ),
+                      \\Todo
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                         child: Text(
@@ -202,12 +203,12 @@ class _MainScreenState extends State<MainScreen> {
                               ["verse"],
                           style: Theme.of(context).textTheme.headline4,
                           textAlign: TextAlign.justify,
-                          // maxLines: 20,
-                          // overflow: TextOverflow.ellipsis,
+                          maxLines: 20,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                        padding: const EdgeInsets.fromLTRB(0, 32, 0, 16),
                         child: InkWell(
                           // splashColor: Colors.blueAccent,
                           // highlightColor: Colors.blue[100],
@@ -249,7 +250,7 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                        padding: const EdgeInsets.fromLTRB(0, 32, 0, 32),
                         child: InkWell(
                             child: Row(
                                 mainAxisAlignment:
@@ -304,7 +305,7 @@ class _MainScreenState extends State<MainScreen> {
                                     children: [
                                       Image(
                                         image: AssetImage(
-                                            'asset/images/Saint Dic.jpg'),
+                                            'asset/images/Saint Dictionary.jpg'),
                                         width:
                                             MediaQuery.of(context).size.width /
                                                 15,
