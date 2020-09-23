@@ -1,10 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share/share.dart';
-
 import 'bible.dart';
 import 'dailyMassReadings.dart';
 import 'saintOfTheDay.dart';
@@ -67,7 +65,7 @@ Widget portrait(context, now, snapshot) {
                                         padding: const EdgeInsets.fromLTRB(
                                             16, 0, 16, 0),
                                         child: Center(
-                                          child: Text(
+                                          child: SelectableText(
                                             data[new DateFormat("yyyy-MM-dd")
                                                 .format(now)]["verse"],
                                             style: Theme.of(context)

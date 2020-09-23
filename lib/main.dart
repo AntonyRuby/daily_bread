@@ -1,16 +1,8 @@
-import 'dart:convert';
 import 'dart:ui';
-import 'package:share/share.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:verses/bible.dart';
 import 'package:verses/main_landscape.dart';
 import 'package:verses/main_portrait.dart';
-import 'saintOfTheDay.dart';
-import 'search.dart';
-import 'dailyMassReadings.dart';
 import 'package:splashscreen/splashscreen.dart';
-import 'bible.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -110,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
         context: context,
         initialDate: _currentdate,
         firstDate: DateTime(2020),
-        lastDate: DateTime(2022),
+        lastDate: DateTime(2021, 12, 31),
         builder: (context, child) {
           return SingleChildScrollView(
             child: child,

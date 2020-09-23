@@ -147,8 +147,9 @@ class Verses extends StatelessWidget {
                           child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: ListTile(
-                                  leading: Text((index + 1).toString()),
-                                  subtitle: Text(bible[book][chapter]
+                                  leading:
+                                      SelectableText((index + 1).toString()),
+                                  subtitle: SelectableText(bible[book][chapter]
                                       [int.parse(verses[index][1])])))));
                 }
               }),

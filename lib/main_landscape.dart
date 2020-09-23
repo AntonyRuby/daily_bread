@@ -1,10 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share/share.dart';
-
 import 'bible.dart';
 import 'dailyMassReadings.dart';
 import 'saintOfTheDay.dart';
@@ -76,7 +74,7 @@ Widget landscape(context, now, snapshot) {
                                           padding: const EdgeInsets.fromLTRB(
                                               16, 0, 16, 0),
                                           child: Center(
-                                            child: Text(
+                                            child: SelectableText(
                                               data[new DateFormat("yyyy-MM-dd")
                                                   .format(now)]["verse"],
                                               style: Theme.of(context)
@@ -97,7 +95,7 @@ Widget landscape(context, now, snapshot) {
                       data[new DateFormat("yyyy-MM-dd").format(now)]["verse"],
                       style: Theme.of(context).textTheme.headline4,
                       textAlign: TextAlign.justify,
-                      maxLines: 5,
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -191,6 +189,7 @@ Widget landscape(context, now, snapshot) {
                             child: Text(
                               "Saints Dictionary",
                               style: Theme.of(context).textTheme.button,
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ]),
