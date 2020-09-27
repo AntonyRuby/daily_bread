@@ -51,7 +51,7 @@ dev_dependencies:
 
    
 flutter_icons:
-  image_path: "asset/images/Capture.PNG"
+  image_path: "asset/images/launch icon.PNG"
   android: true
   ios: true
 

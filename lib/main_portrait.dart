@@ -106,7 +106,7 @@ Widget portrait(context, now, snapshot) {
                       flex: 2,
                       child: Center(
                         child: Image(
-                          image: AssetImage('asset/images/Saint.png'),
+                          image: AssetImage('asset/images/saintoftheday.PNG'),
                           width: MediaQuery.of(context).size.width / 10,
                         ),
                       ),
@@ -145,8 +145,8 @@ Widget portrait(context, now, snapshot) {
                         children: [
                           Image(
                               image:
-                                  AssetImage('asset/images/MassReadings.jpg'),
-                              width: MediaQuery.of(context).size.width / 15),
+                                  AssetImage('asset/images/Mass Readings.png'),
+                              width: MediaQuery.of(context).size.width / 21),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                             child: Text(
@@ -172,8 +172,8 @@ Widget portrait(context, now, snapshot) {
                         children: [
                           Image(
                             image:
-                                AssetImage('asset/images/Saint Dictionary.jpg'),
-                            width: MediaQuery.of(context).size.width / 15,
+                                AssetImage('asset/images/Saint Dictionary.png'),
+                            width: MediaQuery.of(context).size.width / 14,
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
@@ -196,8 +196,8 @@ Widget portrait(context, now, snapshot) {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image(
-                            image: AssetImage('asset/images/bible.jpg'),
-                            width: MediaQuery.of(context).size.width / 8,
+                            image: AssetImage('asset/images/Holybible.png'),
+                            width: MediaQuery.of(context).size.width / 15,
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
