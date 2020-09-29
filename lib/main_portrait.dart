@@ -98,6 +98,7 @@ Widget portrait(context, now, snapshot) {
         Container(height: 20),
         Container(
           height: 48,
+          color: Colors.grey[300],
           child: InkWell(
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -131,91 +132,87 @@ Widget portrait(context, now, snapshot) {
                             })));
               }),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-          child: Container(
-            color: Colors.blue[700],
-            height: 65,
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  InkWell(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image(
-                              image:
-                                  AssetImage('asset/images/Mass Readings.png'),
-                              width: MediaQuery.of(context).size.width / 21),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                            child: Text(
-                              "Mass Readings",
-                              style: Theme.of(context).textTheme.button,
-                            ),
+        Container(
+          color: Colors.blue[700],
+          height: 65,
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                InkWell(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image(
+                            image: AssetImage('asset/images/Mass Readings.png'),
+                            width: MediaQuery.of(context).size.width / 21),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                          child: Text(
+                            "Mass Readings",
+                            style: Theme.of(context).textTheme.button,
                           ),
-                        ]),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MassReadings(
-                                    dailyreadings: daily[
-                                        new DateFormat("yyyy-MM-dd")
-                                            .format(now)]["readings"],
-                                  )));
-                    },
-                  ),
-                  InkWell(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image(
-                            image:
-                                AssetImage('asset/images/Saint Dictionary.png'),
-                            width: MediaQuery.of(context).size.width / 14,
+                        ),
+                      ]),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MassReadings(
+                                  dailyreadings: daily[
+                                      new DateFormat("yyyy-MM-dd")
+                                          .format(now)]["readings"],
+                                )));
+                  },
+                ),
+                InkWell(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image(
+                          image:
+                              AssetImage('asset/images/Saint Dictionary.png'),
+                          width: MediaQuery.of(context).size.width / 14,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                          child: Text(
+                            "Saints Dictionary",
+                            style: Theme.of(context).textTheme.button,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                            child: Text(
-                              "Saints Dictionary",
-                              style: Theme.of(context).textTheme.button,
-                            ),
+                        ),
+                      ]),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                SearchPage(saintlist: saints)));
+                  },
+                ),
+                InkWell(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image(
+                          image: AssetImage('asset/images/Holybible.png'),
+                          width: MediaQuery.of(context).size.width / 15,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                          child: Text(
+                            "Holy Bible",
+                            style: Theme.of(context).textTheme.button,
                           ),
-                        ]),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  SearchPage(saintlist: saints)));
-                    },
-                  ),
-                  InkWell(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image(
-                            image: AssetImage('asset/images/Holybible.png'),
-                            width: MediaQuery.of(context).size.width / 15,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                            child: Text(
-                              "Holy Bible",
-                              style: Theme.of(context).textTheme.button,
-                            ),
-                          ),
-                        ]),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BookScreen(bible: bible)));
-                    },
-                  )
-                ]),
-          ),
+                        ),
+                      ]),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BookScreen(bible: bible)));
+                  },
+                )
+              ]),
         ),
       ]);
 }

@@ -75,6 +75,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    saintnames.sort((b, a) => b.name.compareTo(a.name));
     return Scaffold(
         appBar: AppBar(title: Text("Saints of the Year")),
         body: Container(

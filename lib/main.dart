@@ -7,7 +7,7 @@ import 'package:splashscreen/splashscreen.dart';
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    title: "Verses for the day",
+    title: "Daily Bread",
     theme: ThemeData(
       primaryColor: Colors.blue[500],
       appBarTheme: AppBarTheme(color: Colors.blue[700]),
