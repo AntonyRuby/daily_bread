@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:verses/main_landscape.dart';
-import 'package:verses/main_portrait.dart';
+import 'package:daily_bread/main_landscape.dart';
+import 'package:daily_bread/main_portrait.dart';
 import 'package:splashscreen/splashscreen.dart';
 
 void main() {

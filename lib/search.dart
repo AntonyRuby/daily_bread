@@ -52,7 +52,10 @@ class _SearchPageState extends State<SearchPage> {
       widget.saintlist.forEach((key, value) => {
             saintnames.add(new Saintname(
               "asset/images/" + value["img"],
-              key,
+              key
+                  .replaceAll("Saint ", "")
+                  .replaceAll("Blessed ", "")
+                  .replaceAll("Saints ", ""),
               value["about"],
               value["period"],
             ))
@@ -75,7 +78,8 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    saintnames.sort((b, a) => b.name.compareTo(a.name));
+    saintnames.sort((a, b) => a.name.compareTo(b.name));
+
     return Scaffold(
         appBar: AppBar(title: Text("Saints of the Year")),
         body: Container(
@@ -151,9 +155,9 @@ class _SearchPageState extends State<SearchPage> {
                                   height: 60, width: 60),
                               SizedBox(width: 20),
                               Container(
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.35,
-                                  child: Text(filteredsaintnames[index].name)),
+                                width: MediaQuery.of(context).size.width / 1.35,
+                                child: Text(filteredsaintnames[index].name),
+                              ),
                             ],
                           ),
                         ),

@@ -1,5 +1,5 @@
-name: verses
-description: A new Flutter project.
+name: daily_bread
+description: Start your beautiful day with God's word.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -53,7 +53,7 @@ dev_dependencies:
 flutter_icons:
   image_path: "asset/images/launch icon.PNG"
   android: true
-  ios: true
+  ios: false
 
 flutter_launcher_name:
   name: "Daily Bread"
