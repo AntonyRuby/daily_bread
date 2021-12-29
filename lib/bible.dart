@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 class BookScreen extends StatelessWidget {
   final bible;
@@ -49,7 +48,7 @@ class Chapters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<List> chapters = new List();
+    List<List> chapters = [];
     for (var i = 0; i < bible[book].length; i++) {
       chapters.add(["Chapter " + (i + 1).toString(), i]);
     }
@@ -97,7 +96,7 @@ class Verses extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<List<String>> verses = new List();
+    List<List<String>> verses = [];
     for (var i = 0; i < bible[book][chapter].length; i++) {
       verses.add(["Verse " + (i + 1).toString(), i.toString()]);
     }

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:daily_bread/main_landscape.dart';
 import 'package:daily_bread/main_portrait.dart';
@@ -91,6 +90,7 @@ class _MainScreenState extends State<MainScreen> {
         await DefaultAssetBundle.of(context).loadString('asset/saints.json');
     final daily =
         await DefaultAssetBundle.of(context).loadString('asset/daily.json');
+
     final bible =
         await DefaultAssetBundle.of(context).loadString('asset/bible.json');
 
@@ -101,8 +101,8 @@ class _MainScreenState extends State<MainScreen> {
     final DateTime _seldate = await showDatePicker(
         context: context,
         initialDate: _currentdate,
-        firstDate: DateTime(2020),
-        lastDate: DateTime(2021, 12, 31),
+        firstDate: DateTime(2021),
+        lastDate: DateTime(2022, 12, 31),
         builder: (context, child) {
           return SingleChildScrollView(
             child: child,
@@ -118,41 +118,46 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Thought for the day',
-          style: Theme.of(context).textTheme.headline6,
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Thought for the day',
+            style: Theme.of(context).textTheme.headline6,
+          ),
+          actions: [
+            IconButton(
+                icon: Icon(Icons.calendar_today),
+                onPressed: () {
+                  _selectdate(context);
+                }),
+            IconButton(
+                icon: Icon(Icons.arrow_back_ios),
+                onPressed: () => previousDay()),
+            IconButton(
+                icon: Icon(Icons.arrow_forward_ios),
+                onPressed: () => nextDay()),
+          ],
+          elevation: 0,
         ),
-        actions: [
-          IconButton(
-              icon: Icon(Icons.calendar_today),
-              onPressed: () {
-                _selectdate(context);
-              }),
-          IconButton(
-              icon: Icon(Icons.arrow_back_ios), onPressed: () => previousDay()),
-          IconButton(
-              icon: Icon(Icons.arrow_forward_ios), onPressed: () => nextDay()),
-        ],
-        elevation: 0,
-      ),
-      body: FutureBuilder(
-          future: loadAssets(),
-          builder: (context, snapshot) {
-            if (snapshot.data == null) {
-              return Center(
-                child: Text("Loading"),
-              );
-            }
+        body: FutureBuilder(
+            future: loadAssets(),
+            builder: (context, snapshot) {
+              if (snapshot.data == null) {
+                return Center(
+                  child: Text("Loading"),
+                );
+              }
 
-            Orientation orientation = MediaQuery.of(context).orientation;
-            if (orientation == Orientation.portrait) {
-              return portrait(context, now, snapshot);
-            } else {
-              return landscape(context, now, snapshot);
-            }
-          }),
+              Orientation orientation = MediaQuery.of(context).orientation;
+              if (orientation == Orientation.portrait) {
+                return portrait(context, now, snapshot);
+              } else {
+                return landscape(context, now, snapshot);
+              }
+            }),
+      ),
     );
   }
 }
