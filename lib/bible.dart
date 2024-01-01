@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class BookScreen extends StatelessWidget {
   final bible;
-  BookScreen({Key key, @required this.bible}) : super(key: key);
+  BookScreen({Key? key, @required this.bible}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class BookScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(24.0),
                           child: Text(
                             bible.keys.toList()[index],
-                            style: Theme.of(context).textTheme.subtitle1,
+                            style: Theme.of(context).textTheme.titleMedium,
                           )),
                     ),
                   ),
@@ -43,7 +43,7 @@ class BookScreen extends StatelessWidget {
 class Chapters extends StatelessWidget {
   final book;
   final bible;
-  Chapters({Key key, @required this.bible, @required this.book})
+  Chapters({Key? key, @required this.bible, @required this.book})
       : super(key: key);
 
   @override
@@ -88,7 +88,7 @@ class Verses extends StatelessWidget {
   final book;
   final chapter;
   Verses(
-      {Key key,
+      {Key? key,
       @required this.bible,
       @required this.book,
       @required this.chapter})

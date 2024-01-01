@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:daily_bread/main_landscape.dart';
 import 'package:daily_bread/main_portrait.dart';
-import 'package:splashscreen/splashscreen.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -12,54 +11,33 @@ void main() {
       appBarTheme: AppBarTheme(color: Colors.blue[700]),
       navigationRailTheme:
           NavigationRailThemeData(backgroundColor: Colors.blue[200]),
-      accentColor: Colors.blue,
+      hintColor: Colors.blue,
       textTheme: TextTheme(
-        headline5: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        headline6: TextStyle(
+        headlineSmall:
+            TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        titleLarge: TextStyle(
           color: Colors.white,
         ),
-        headline4: TextStyle(
+        headlineMedium: TextStyle(
           color: Colors.black,
         ),
-        bodyText1: TextStyle(
+        bodyLarge: TextStyle(
             color: Colors.black, fontWeight: FontWeight.normal, fontSize: 20),
-        bodyText2: TextStyle(
+        bodyMedium: TextStyle(
             color: Colors.black, fontWeight: FontWeight.normal, fontSize: 20),
-        subtitle1: TextStyle(
+        titleMedium: TextStyle(
             color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
-        subtitle2: TextStyle(
+        titleSmall: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.normal,
         ),
-        button: TextStyle(
+        labelLarge: TextStyle(
           color: Colors.white,
         ),
       ),
     ),
-    home: Homepage(),
+    home: MainScreen(),
   ));
-}
-
-class Homepage extends StatefulWidget {
-  @override
-  _HomepageState createState() {
-    return _HomepageState();
-  }
-}
-
-class _HomepageState extends State<Homepage> {
-  @override
-  Widget build(BuildContext context) {
-    return SplashScreen(
-      seconds: 5,
-      title:
-          new Text('Daily Bread', style: Theme.of(context).textTheme.headline5),
-      image: Image.asset('asset/images/Capture.PNG'),
-      photoSize: 100,
-      styleTextUnderTheLoader: new TextStyle(),
-      navigateAfterSeconds: MainScreen(),
-    );
-  }
 }
 
 class MainScreen extends StatefulWidget {
@@ -98,11 +76,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<Null> _selectdate(BuildContext context) async {
-    final DateTime _seldate = await showDatePicker(
+    final DateTime? _seldate = await showDatePicker(
         context: context,
         initialDate: _currentdate,
-        firstDate: DateTime(2023),
-        lastDate: DateTime(2023, 12, 31),
+        firstDate: DateTime(2024),
+        lastDate: DateTime(2024, 12, 31),
         builder: (context, child) {
           return SingleChildScrollView(
             child: child,
@@ -124,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
         appBar: AppBar(
           title: Text(
             'Thought for the day',
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           actions: [
             IconButton(

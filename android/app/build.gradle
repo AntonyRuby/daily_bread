@@ -1,3 +1,5 @@
+
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -32,7 +34,10 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 29
+//    compileSdkVersion 33
+    compileSdkVersion flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -42,10 +47,19 @@ android {
         disable 'InvalidPackage'
     }
 
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     defaultConfig {
         applicationId "com.ruby.daily_bread"
-        minSdkVersion 16
-        targetSdkVersion 30
+//        minSdkVersion 30
+////        targetSdkVersion 34
+//        targetSdkVersion 33
+//        versionCode flutterVersionCode.toInteger()
+//        versionName flutterVersionName
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -60,12 +74,18 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true   
-            shrinkResources true   
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'   
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
     }
+    namespace 'com.ruby.daily_bread'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildToolsVersion '34.0.0'
 }
 
 flutter {

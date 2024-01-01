@@ -1,21 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'saintOfTheDay.dart';
-import 'package:flutter/foundation.dart';
 
 class SearchPage extends StatefulWidget {
   final saintlist;
-  SearchPage({Key key, @required this.saintlist}) : super(key: key);
+  SearchPage({Key? key, @required this.saintlist}) : super(key: key);
 
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class Saintname {
-  String image;
-  String name;
-  String about;
-  String period;
+  late String image;
+  late String name;
+  late String about;
+  late String period;
 
   Saintname(String image, String name, String about, String period) {
     this.image = image;
@@ -27,12 +26,14 @@ class Saintname {
 
 class Debouncer {
   final int milliseconds;
-  VoidCallback action;
-  Timer _timer;
+  late VoidCallback action;
+  late Timer _timer;
 
-  Debouncer({this.milliseconds});
+  Debouncer({required this.milliseconds})
+      : _timer = Timer(Duration(milliseconds: milliseconds), () {});
+
   run(VoidCallback action) {
-    if (null != _timer) {
+    if (_timer.isActive) {
       _timer.cancel();
     }
     _timer = Timer(Duration(milliseconds: milliseconds), action);
@@ -41,10 +42,10 @@ class Debouncer {
 
 class _SearchPageState extends State<SearchPage> {
   final _debouncer = Debouncer(milliseconds: 300);
-  List<Saintname> saintnames = new List();
-  List<Saintname> filteredsaintnames = new List();
+  List<Saintname> saintnames = [];
+  List<Saintname> filteredsaintnames = [];
   String _searchText = "";
-  TextEditingController _searchController;
+  late TextEditingController _searchController;
 
   @override
   void initState() {
@@ -87,7 +88,7 @@ class _SearchPageState extends State<SearchPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
               onChanged: (string) {
                 _debouncer.run(() {
                   setState(() {
@@ -126,7 +127,7 @@ class _SearchPageState extends State<SearchPage> {
                 ? Center(
                     child: Text(
                       "No results found",
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   )
                 : ListView.builder(

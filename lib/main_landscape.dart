@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'bible.dart';
 import 'dailyMassReadings.dart';
 import 'saintOfTheDay.dart';
@@ -29,7 +29,7 @@ Widget landscape(context, now, snapshot) {
                     padding: const EdgeInsets.fromLTRB(16, 4, 0, 4),
                     child: Text(
                       new DateFormat("EEEE, dd MMMM yyyy").format(now),
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
                   Padding(
@@ -78,7 +78,7 @@ Widget landscape(context, now, snapshot) {
                                                   .format(now)]["verse"],
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .headline4,
+                                                  .headlineMedium,
                                               textAlign: TextAlign.justify,
                                             ),
                                           ),
@@ -92,7 +92,7 @@ Widget landscape(context, now, snapshot) {
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                     child: Text(
                       data[new DateFormat("yyyy-MM-dd").format(now)]["verse"],
-                      style: Theme.of(context).textTheme.headline4,
+                      style: Theme.of(context).textTheme.headlineMedium,
                       textAlign: TextAlign.justify,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
@@ -123,7 +123,7 @@ Widget landscape(context, now, snapshot) {
                         flex: 8,
                         child: Center(
                           child: Text(saintName,
-                              style: Theme.of(context).textTheme.subtitle2),
+                              style: Theme.of(context).textTheme.titleSmall),
                         ),
                       ),
                     ]),
@@ -159,7 +159,7 @@ Widget landscape(context, now, snapshot) {
                             padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                             child: Text(
                               "Mass Readings",
-                              style: Theme.of(context).textTheme.button,
+                              style: Theme.of(context).textTheme.labelLarge,
                             ),
                           ),
                         ]),
@@ -187,7 +187,7 @@ Widget landscape(context, now, snapshot) {
                             padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                             child: Text(
                               "Saints Dictionary",
-                              style: Theme.of(context).textTheme.button,
+                              style: Theme.of(context).textTheme.labelLarge,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -212,7 +212,7 @@ Widget landscape(context, now, snapshot) {
                             padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                             child: Text(
                               "Holy Bible",
-                              style: Theme.of(context).textTheme.button,
+                              style: Theme.of(context).textTheme.labelLarge,
                             ),
                           ),
                         ]),

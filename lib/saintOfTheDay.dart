@@ -1,11 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:share/share.dart';
-import 'package:wc_flutter_share/wc_flutter_share.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Saint extends StatefulWidget {
   final saint;
-  Saint({Key key, @required this.saint}) : super(key: key);
+  Saint({Key? key, @required this.saint}) : super(key: key);
 
   @override
   _SaintState createState() => _SaintState();
@@ -18,19 +20,26 @@ class _SaintState extends State<Saint> {
       appBar: AppBar(
         title: Text(
           widget.saint["name"],
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.share),
-              onPressed: () {
-                final RenderBox box = context.findRenderObject();
-                String text =
-                    widget.saint["period"] + '\n\n\n' + widget.saint["about"];
-                Share.share(text,
-                    sharePositionOrigin:
-                        box.localToGlobal(Offset.zero) & box.size);
-              })
+            icon: Icon(Icons.share),
+            onPressed: () {
+              final RenderBox? box = context.findRenderObject() as RenderBox?;
+              if (box != null) {
+                String text = '\n\n' +
+                    widget.saint["period"] +
+                    '\n\n\n' +
+                    widget.saint["about"];
+                Share.share(
+                  text,
+                  sharePositionOrigin:
+                      box.localToGlobal(Offset.zero) & box.size,
+                );
+              }
+            },
+          )
         ],
       ),
       body: saintDetails(),
@@ -85,7 +94,7 @@ class _SaintState extends State<Saint> {
         SelectableText(widget.saint["period"],
             toolbarOptions:
                 ToolbarOptions(copy: true, paste: true, selectAll: true),
-            style: Theme.of(context).textTheme.subtitle1),
+            style: Theme.of(context).textTheme.titleMedium),
       ],
     );
   }
@@ -100,7 +109,7 @@ class _SaintState extends State<Saint> {
             widget.saint["about"],
             toolbarOptions:
                 ToolbarOptions(copy: true, paste: true, selectAll: true),
-            style: Theme.of(context).textTheme.bodyText1,
+            style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.justify,
           ),
         ))
@@ -135,7 +144,7 @@ class _SaintState extends State<Saint> {
           child: SelectableText(widget.saint["period"],
               toolbarOptions:
                   ToolbarOptions(copy: true, paste: true, selectAll: true),
-              style: Theme.of(context).textTheme.subtitle1),
+              style: Theme.of(context).textTheme.titleMedium),
         )
       ],
     );
@@ -155,7 +164,7 @@ class _SaintState extends State<Saint> {
             widget.saint["about"],
             toolbarOptions:
                 ToolbarOptions(copy: true, paste: true, selectAll: true),
-            style: Theme.of(context).textTheme.bodyText1,
+            style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.justify,
           ),
         )
@@ -167,7 +176,7 @@ class _SaintState extends State<Saint> {
 class ImagePage extends StatelessWidget {
   final saintimage;
   final saintname;
-  ImagePage({Key key, @required this.saintimage, @required this.saintname})
+  ImagePage({Key? key, @required this.saintimage, @required this.saintname})
       : super(key: key);
 
   @override
@@ -175,17 +184,30 @@ class ImagePage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
+          iconTheme: IconThemeData(color: Colors.white),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
           actions: <Widget>[
             IconButton(
-                icon: Icon(Icons.share),
-                onPressed: () async {
-                  final ByteData byte = await rootBundle.load(saintimage);
-                  await WcFlutterShare.share(
-                      sharePopupTitle: 'Saint',
-                      fileName: saintname + ".jpg",
-                      bytesOfFile: byte.buffer.asUint8List(),
-                      mimeType: 'images/jpg');
-                }),
+              icon: Icon(Icons.share),
+              onPressed: () async {
+                final ByteData byte = await rootBundle.load(saintimage);
+                final Uint8List bytesOfFile = byte.buffer.asUint8List();
+
+                final tempDir = await getTemporaryDirectory();
+                final tempFile = await File('${tempDir.path}/saint_image.jpg')
+                    .writeAsBytes(bytesOfFile);
+
+                // Use Share.shareFiles to share with name
+                await Share.shareFiles(
+                  [tempFile.path],
+                );
+              },
+            )
           ],
         ),
         backgroundColor: Colors.black,
