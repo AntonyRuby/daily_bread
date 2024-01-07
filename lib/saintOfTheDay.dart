@@ -22,9 +22,13 @@ class _SaintState extends State<Saint> {
           widget.saint["name"],
           style: Theme.of(context).textTheme.titleLarge,
         ),
+        iconTheme: IconThemeData(color: Colors.white),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.share),
+            icon: Icon(
+              Icons.share,
+              color: Colors.white,
+            ),
             onPressed: () {
               final RenderBox? box = context.findRenderObject() as RenderBox?;
               if (box != null) {
@@ -39,7 +43,7 @@ class _SaintState extends State<Saint> {
                 );
               }
             },
-          )
+          ),
         ],
       ),
       body: saintDetails(),
@@ -202,7 +206,6 @@ class ImagePage extends StatelessWidget {
                 final tempFile = await File('${tempDir.path}/saint_image.jpg')
                     .writeAsBytes(bytesOfFile);
 
-                // Use Share.shareFiles to share with name
                 await Share.shareFiles(
                   [tempFile.path],
                 );

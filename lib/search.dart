@@ -82,7 +82,11 @@ class _SearchPageState extends State<SearchPage> {
     saintnames.sort((a, b) => a.name.compareTo(b.name));
 
     return Scaffold(
-        appBar: AppBar(title: Text("Saints of the Year")),
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
+          title: Text("Saints of the Year",
+              style: Theme.of(context).textTheme.titleLarge),
+        ),
         body: Container(
             child: Column(children: <Widget>[
           Padding(

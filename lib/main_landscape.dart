@@ -104,7 +104,7 @@ Widget landscape(context, now, snapshot) {
             ),
           ),
           Container(
-            height: 48,
+            height: 51,
             color: Colors.grey[300],
             child: InkWell(
                 child: Row(

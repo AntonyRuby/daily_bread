@@ -7,7 +7,12 @@ class BookScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("The Holy Bible")),
+        appBar: AppBar(
+            iconTheme: IconThemeData(color: Colors.white),
+            title: Text(
+              "The Holy Bible",
+              style: Theme.of(context).textTheme.titleLarge,
+            )),
         body: Container(
           child: ListView.builder(
               itemCount: bible.length,
@@ -54,7 +59,12 @@ class Chapters extends StatelessWidget {
     }
 
     return Scaffold(
-        appBar: AppBar(title: Text(book)),
+        appBar: AppBar(
+            iconTheme: IconThemeData(color: Colors.white),
+            title: Text(
+              book,
+              style: Theme.of(context).textTheme.titleLarge,
+            )),
         body: Container(
           child: ListView.builder(
               itemCount: chapters.length,
@@ -107,7 +117,12 @@ class Verses extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-            title: Text(book + " : Chapter " + (chapter + 1).toString())),
+          iconTheme: IconThemeData(color: Colors.white),
+          title: Text(
+            book + " : Chapter " + (chapter + 1).toString(),
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
         body: Container(
           child: ListView.builder(
               itemCount: verses.length,

@@ -8,19 +8,17 @@ void main() {
     title: "Daily Bread",
     theme: ThemeData(
       primaryColor: Colors.blue[500],
-      appBarTheme: AppBarTheme(color: Colors.blue[700]),
+      appBarTheme: AppBarTheme(
+        color: Colors.blue[700],
+      ),
       navigationRailTheme:
           NavigationRailThemeData(backgroundColor: Colors.blue[200]),
       hintColor: Colors.blue,
       textTheme: TextTheme(
         headlineSmall:
-            TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        titleLarge: TextStyle(
-          color: Colors.white,
-        ),
-        headlineMedium: TextStyle(
-          color: Colors.black,
-        ),
+            TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        titleLarge: TextStyle(color: Colors.white),
+        headlineMedium: TextStyle(color: Colors.black),
         bodyLarge: TextStyle(
             color: Colors.black, fontWeight: FontWeight.normal, fontSize: 20),
         bodyMedium: TextStyle(
@@ -106,15 +104,24 @@ class _MainScreenState extends State<MainScreen> {
           ),
           actions: [
             IconButton(
-                icon: Icon(Icons.calendar_today),
+                icon: Icon(
+                  Icons.calendar_today,
+                  color: Colors.white,
+                ),
                 onPressed: () {
                   _selectdate(context);
                 }),
             IconButton(
-                icon: Icon(Icons.arrow_back_ios),
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.white,
+                ),
                 onPressed: () => previousDay()),
             IconButton(
-                icon: Icon(Icons.arrow_forward_ios),
+                icon: Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.white,
+                ),
                 onPressed: () => nextDay()),
           ],
           elevation: 0,

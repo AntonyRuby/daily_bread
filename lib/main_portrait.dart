@@ -94,9 +94,8 @@ Widget portrait(context, now, snapshot) {
             ],
           ),
         ),
-        Container(height: 20),
         Container(
-          height: 48,
+          height: 55,
           color: Colors.grey[300],
           child: InkWell(
               child: Row(

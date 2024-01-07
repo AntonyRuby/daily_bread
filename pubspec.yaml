@@ -38,8 +38,7 @@ flutter_icons:
   image_path: "asset/images/launch icon.PNG"
   android: true
   ios: false
-  # flutter_launcher_name:
-  #   name: "Daily Bread"
+ 
 
 flutter_native_splash:
   color: "#FFFFFF"
