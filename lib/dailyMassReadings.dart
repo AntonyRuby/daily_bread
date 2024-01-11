@@ -14,9 +14,13 @@ class _MassReadingsState extends State<MassReadings> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+            iconTheme: IconThemeData(color: Colors.white),
             actions: <Widget>[
               IconButton(
-                  icon: Icon(Icons.share),
+                  icon: Icon(
+                    Icons.share,
+                    color: Colors.white,
+                  ),
                   onPressed: () {
                     final RenderBox? box =
                         context.findRenderObject() as RenderBox?;
@@ -80,7 +84,7 @@ class _MassReadingsState extends State<MassReadings> {
                     widget.dailyreadings["day"],
                     toolbarOptions: ToolbarOptions(
                         copy: true, paste: true, selectAll: true),
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
                 Padding(

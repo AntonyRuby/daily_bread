@@ -60,8 +60,8 @@ android {
 //        versionName flutterVersionName
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        versionCode 9
+        versionName "9.0.0"
     }
 
     signingConfigs {
