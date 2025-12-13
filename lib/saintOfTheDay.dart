@@ -5,182 +5,127 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-class Saint extends StatefulWidget {
-  final saint;
-  Saint({Key? key, @required this.saint}) : super(key: key);
+class SaintPage extends StatelessWidget {
+  final Map<String, dynamic> saint;
+  const SaintPage({Key? key, required this.saint}) : super(key: key);
 
-  @override
-  _SaintState createState() => _SaintState();
-}
-
-class _SaintState extends State<Saint> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.saint["name"],
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(saint["name"]),
         actions: <Widget>[
           IconButton(
-            icon: Icon(
-              Icons.share,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.share),
             onPressed: () {
-              final RenderBox? box = context.findRenderObject() as RenderBox?;
-              if (box != null) {
-                String text = '\n\n' +
-                    widget.saint["period"] +
-                    '\n\n\n' +
-                    widget.saint["about"];
-                Share.share(
-                  text,
-                  sharePositionOrigin:
-                      box.localToGlobal(Offset.zero) & box.size,
-                );
-              }
+                final text = '\n\n' + saint["period"] + '\n\n\n' + saint["about"];
+                final box = context.findRenderObject() as RenderBox?;
+                if (box != null) {
+                  Share.share(text, sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+                } else {
+                  Share.share(text);
+                }
             },
           ),
         ],
       ),
-      body: saintDetails(),
+      body: LayoutBuilder(
+          builder: (context, constraints) {
+              if (constraints.maxWidth > 600) {
+                  return _buildLandscape(context);
+              } else {
+                  return _buildPortrait(context);
+              }
+          }
+      ),
     );
   }
 
-  Widget saintDetails() {
-    Orientation orientation = MediaQuery.of(context).orientation;
-    if (orientation == Orientation.portrait) {
+  Widget _buildPortrait(BuildContext context) {
       return SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            _image(),
-            _about(),
+            _buildImage(context, width: MediaQuery.of(context).size.width, height: 300),
+            Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(saint["period"], style: Theme.of(context).textTheme.titleMedium?.copyWith(fontStyle: FontStyle.italic)),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: SelectableText(
+                saint["about"],
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.6),
+                textAlign: TextAlign.justify,
+              ),
+            )
           ],
         ),
       );
-    } else {
+  }
+
+  Widget _buildLandscape(BuildContext context) {
       return Row(
-        children: <Widget>[
-          _imageLandscape(),
-          Container(
-            width: MediaQuery.of(context).size.width / 1.8,
-            height: MediaQuery.of(context).size.height,
-            child: _landscapeDetailsSection(),
-          ),
-        ],
+         crossAxisAlignment: CrossAxisAlignment.start,
+         children: [
+             Expanded(
+                 flex: 4,
+                 child: Column(
+                     children: [
+                        _buildImage(context, height: 400, fit: BoxFit.contain),
+                        Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(saint["period"], style: Theme.of(context).textTheme.titleMedium),
+                        ),
+                     ],
+                 ),
+             ),
+             Expanded(
+                 flex: 6,
+                 child: SingleChildScrollView(
+                     padding: const EdgeInsets.all(24.0),
+                     child: SelectableText(
+                        saint["about"],
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontSize: 18, height: 1.6),
+                        textAlign: TextAlign.justify,
+                     ),
+                 ),
+             ),
+         ], 
       );
-    }
   }
 
-  Widget _image() {
-    return Column(
-      children: <Widget>[
-        Container(
-          width: MediaQuery.of(context).size.width / 1.05,
-          height: MediaQuery.of(context).size.height / 2.50,
-          child: GestureDetector(
-              child: Image(
-                image: AssetImage(widget.saint["img"]),
-                fit: BoxFit.contain,
-              ),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ImagePage(
-                            saintimage: widget.saint["img"],
-                            saintname: widget.saint["name"])));
-              }),
-        ),
-        SelectableText(widget.saint["period"],
-            toolbarOptions:
-                ToolbarOptions(copy: true, paste: true, selectAll: true),
-            style: Theme.of(context).textTheme.titleMedium),
-      ],
-    );
-  }
-
-  Widget _about() {
-    return Column(
-      children: <Widget>[
-        Container(
-            child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SelectableText(
-            widget.saint["about"],
-            toolbarOptions:
-                ToolbarOptions(copy: true, paste: true, selectAll: true),
-            style: Theme.of(context).textTheme.bodyLarge,
-            textAlign: TextAlign.justify,
-          ),
-        ))
-      ],
-    );
-  }
-
-  Widget _imageLandscape() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        Container(
-            width: MediaQuery.of(context).size.width / 2.5,
-            height: MediaQuery.of(context).size.height / 2.5,
-            child: GestureDetector(
-                child: Image(
-                  image: AssetImage(
-                    widget.saint["img"],
-                  ),
-                  fit: BoxFit.contain,
+  Widget _buildImage(BuildContext context, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+      return GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ImagePage(
+                        saintimage: saint["img"],
+                        saintname: saint["name"])));
+          },
+          child: Hero(
+              tag: saint["img"],
+              child: Image.asset(
+                saint["img"],
+                width: width,
+                height: height,
+                fit: fit,
+                errorBuilder: (c, e, s) => Container(
+                    height: height, 
+                    color: Colors.grey[300], 
+                    child: const Center(child: Icon(Icons.image_not_supported, size: 50))
                 ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ImagePage(
-                              saintimage: widget.saint["img"],
-                              saintname: widget.saint["name"])));
-                })),
-        Container(
-          width: MediaQuery.of(context).size.width / 3,
-          child: SelectableText(widget.saint["period"],
-              toolbarOptions:
-                  ToolbarOptions(copy: true, paste: true, selectAll: true),
-              style: Theme.of(context).textTheme.titleMedium),
-        )
-      ],
-    );
-  }
-
-  Widget _landscapeDetailsSection() {
-    return SingleChildScrollView(
-        child: Column(children: <Widget>[_aboutLandscape()]));
-  }
-
-  Widget _aboutLandscape() {
-    return Column(
-      children: <Widget>[
-        Container(
-          width: MediaQuery.of(context).size.width / 1.5,
-          child: SelectableText(
-            widget.saint["about"],
-            toolbarOptions:
-                ToolbarOptions(copy: true, paste: true, selectAll: true),
-            style: Theme.of(context).textTheme.bodyLarge,
-            textAlign: TextAlign.justify,
+              ),
           ),
-        )
-      ],
-    );
+      );
   }
 }
 
 class ImagePage extends StatelessWidget {
-  final saintimage;
-  final saintname;
-  ImagePage({Key? key, @required this.saintimage, @required this.saintname})
+  final String saintimage;
+  final String saintname;
+  const ImagePage({Key? key, required this.saintimage, required this.saintname})
       : super(key: key);
 
   @override
@@ -188,38 +133,30 @@ class ImagePage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          iconTheme: IconThemeData(color: Colors.white),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.white),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.share),
+              icon: const Icon(Icons.share),
               onPressed: () async {
-                final ByteData byte = await rootBundle.load(saintimage);
-                final Uint8List bytesOfFile = byte.buffer.asUint8List();
-
-                final tempDir = await getTemporaryDirectory();
-                final tempFile = await File('${tempDir.path}/saint_image.jpg')
-                    .writeAsBytes(bytesOfFile);
-
-                await Share.shareFiles(
-                  [tempFile.path],
-                );
+                try {
+                    final ByteData byte = await rootBundle.load(saintimage);
+                    final Uint8List bytesOfFile = byte.buffer.asUint8List();
+                    final tempDir = await getTemporaryDirectory();
+                    final tempFile = await File('${tempDir.path}/saint_image.jpg').writeAsBytes(bytesOfFile);
+                    await Share.shareXFiles([XFile(tempFile.path)]);
+                } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Could not share image.")));
+                }
               },
             )
           ],
         ),
         backgroundColor: Colors.black,
         body: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(saintimage), fit: BoxFit.contain),
-            ),
+          child: Hero(
+              tag: saintimage,
+              child: Image.asset(saintimage, fit: BoxFit.contain),
           ),
         ));
   }

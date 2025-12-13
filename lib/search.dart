@@ -1,40 +1,29 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'saintOfTheDay.dart';
+import 'package:daily_bread/services/data_service.dart';
+import 'package:daily_bread/models/saint.dart';
+import 'package:daily_bread/saintOfTheDay.dart';
 
 class SearchPage extends StatefulWidget {
-  final saintlist;
-  SearchPage({Key? key, @required this.saintlist}) : super(key: key);
+  // We can ignore the passed list and use DataService, but keeping parameter for compatibility if needed.
+  // Actually, let's make it optional.
+  final Map<String, dynamic>? saintlist;
+  const SearchPage({Key? key, this.saintlist}) : super(key: key);
 
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
-class Saintname {
-  late String image;
-  late String name;
-  late String about;
-  late String period;
-
-  Saintname(String image, String name, String about, String period) {
-    this.image = image;
-    this.name = name;
-    this.about = about;
-    this.period = period;
-  }
-}
-
 class Debouncer {
   final int milliseconds;
   late VoidCallback action;
-  late Timer _timer;
+  Timer? _timer;
 
-  Debouncer({required this.milliseconds})
-      : _timer = Timer(Duration(milliseconds: milliseconds), () {});
+  Debouncer({required this.milliseconds});
 
   run(VoidCallback action) {
-    if (_timer.isActive) {
-      _timer.cancel();
+    if (_timer != null) {
+      _timer!.cancel();
     }
     _timer = Timer(Duration(milliseconds: milliseconds), action);
   }
@@ -42,133 +31,122 @@ class Debouncer {
 
 class _SearchPageState extends State<SearchPage> {
   final _debouncer = Debouncer(milliseconds: 300);
-  List<Saintname> saintnames = [];
-  List<Saintname> filteredsaintnames = [];
-  String _searchText = "";
-  late TextEditingController _searchController;
+  List<Saint> allSaints = [];
+  List<Saint> filteredSaints = [];
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
-    {
-      widget.saintlist.forEach((key, value) => {
-            saintnames.add(new Saintname(
-              "asset/images/" + value["img"],
-              key
-                  .replaceAll("Saint ", "")
-                  .replaceAll("Blessed ", "")
-                  .replaceAll("Saints ", ""),
-              value["about"],
-              value["period"],
-            ))
-          });
+    super.initState();
+    // Load from DataService
+    allSaints = DataService().getAllSaints();
+    // Sort alphabetically
+    allSaints.sort((a, b) => a.name.compareTo(b.name));
+    filteredSaints = allSaints;
 
-      setState(() {
-        filteredsaintnames = saintnames;
-      });
-
-      _searchController = TextEditingController();
-      _searchController.addListener(() {
-        setState(() {
-          _searchText = _searchController.text;
+    _searchController.addListener(() {
+        _debouncer.run(() {
+            setState(() {
+                final query = _searchController.text.toLowerCase();
+                if (query.isEmpty) {
+                    filteredSaints = allSaints;
+                } else {
+                    filteredSaints = allSaints.where((s) => s.name.toLowerCase().contains(query)).toList();
+                }
+            });
         });
-      });
+    });
+  }
 
-      super.initState();
-    }
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    saintnames.sort((a, b) => a.name.compareTo(b.name));
-
     return Scaffold(
         appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.white),
-          title: Text("Saints of the Year",
-              style: Theme.of(context).textTheme.titleLarge),
+          title: const Text("Saints Dictionary"),
         ),
-        body: Container(
-            child: Column(children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              style: Theme.of(context).textTheme.bodyLarge,
-              onChanged: (string) {
-                _debouncer.run(() {
-                  setState(() {
-                    filteredsaintnames = saintnames
-                        .where((p) => (p.name
-                            .toLowerCase()
-                            .contains(string.toLowerCase())))
-                        .toList();
-                  });
-                });
-              },
-              controller: _searchController,
-              decoration: InputDecoration(
-                  labelText: "Search",
-                  hintText: "Search",
-                  prefixIcon: Icon(
-                    Icons.search,
-                  ),
-                  suffixIcon: _searchText.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(Icons.clear),
-                          onPressed: () {
-                            setState(() {
-                              filteredsaintnames = saintnames;
-                              _searchController.clear();
-                            });
-                          },
-                        )
-                      : null,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(25.0)))),
-            ),
-          ),
-          Expanded(
-            child: filteredsaintnames.isEmpty
-                ? Center(
-                    child: Text(
-                      "No results found",
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: filteredsaintnames.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Saint(saint: {
-                                        "img": filteredsaintnames[index].image,
-                                        "about":
-                                            filteredsaintnames[index].about,
-                                        "name": filteredsaintnames[index].name,
-                                        "period":
-                                            filteredsaintnames[index].period,
-                                      })));
-                        },
-                        child: Card(
-                          elevation: 0,
-                          margin: EdgeInsets.all(1),
-                          child: Row(
-                            children: <Widget>[
-                              Image.asset(filteredsaintnames[index].image,
-                                  height: 60, width: 60),
-                              SizedBox(width: 20),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 1.35,
-                                child: Text(filteredsaintnames[index].name),
-                              ),
-                            ],
-                          ),
+        body: Column(
+            children: <Widget>[
+                Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                            labelText: "Search Saints",
+                            prefixIcon: const Icon(Icons.search),
+                            suffixIcon: _searchController.text.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear),
+                                    onPressed: () {
+                                        _searchController.clear();
+                                        setState(() {
+                                            filteredSaints = allSaints;
+                                        });
+                                    },
+                                )
+                                : null,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            filled: true,
+                            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                         ),
-                      );
-                    }),
-          )
-        ])));
+                    ),
+                ),
+                Expanded(
+                    child: filteredSaints.isEmpty
+                        ? Center(
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                    const Icon(Icons.search_off, size: 64, color: Colors.grey),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                        "No saints found",
+                                        style: Theme.of(context).textTheme.titleLarge,
+                                    ),
+                                ],
+                            ),
+                        )
+                        : ListView.builder(
+                            itemCount: filteredSaints.length,
+                            itemBuilder: (BuildContext context, int index) {
+                                final saint = filteredSaints[index];
+                                return ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    leading: Hero(
+                                        tag: "list_${saint.imagePath}",
+                                        child: CircleAvatar(
+                                            radius: 30,
+                                            backgroundImage: AssetImage(saint.imagePath),
+                                            onBackgroundImageError: (e, s) {},
+                                            child: null, // Fallback handled by errorBuilder usually, but here AssetImage doesn't have it direct. 
+                                                         // Ideally we'd use a widget with error builder, but CircleAvatar is simpler.
+                                        ),
+                                    ),
+                                    title: Text(saint.name, style: Theme.of(context).textTheme.titleMedium),
+                                    subtitle: Text(saint.period, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                    onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => SaintPage(saint: {
+                                                      "img": saint.imagePath,
+                                                      "about": saint.about,
+                                                      "name": saint.name,
+                                                      "period": saint.period,
+                                                    })));
+                                    },
+                                );
+                            }),
+                )
+            ],
+        ),
+    );
   }
 }
