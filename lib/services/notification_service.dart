@@ -16,7 +16,7 @@ class NotificationService {
     if (_initialized) return;
 
     tz.initializeTimeZones();
-    final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+    final String timeZoneName = await FlutterTimezone.getLocalTimezone().then((info) => info.identifier);
     tz.setLocalLocation(tz.getLocation(timeZoneName));
 
     const androidSettings =
@@ -60,66 +60,67 @@ class NotificationService {
 
   // Schedule notifications for the next 7 days
   static Future<void> scheduleNotifications() async {
+    print("Scheduling notifications...");
     await initialize();
     await cancelAll(); // Clear existing to avoid duplicates
 
     final now = DateTime.now();
+    int scheduledCount = 0;
 
     for (int i = 0; i < 7; i++) {
-      final date = now.add(Duration(days: i));
-      final dateStr = DateFormat("yyyy-MM-dd").format(date);
-      final verse = DataService().getVerse(dateStr);
+      try {
+        final date = now.add(Duration(days: i));
+        final dateStr = DateFormat("yyyy-MM-dd").format(date);
+        final verse = DataService().getVerse(dateStr);
 
-      if (verse != null) {
-        String verseText = verse.text.length > 100
-            ? '${verse.text.substring(0, 100)}...'
-            : verse.text;
+        if (verse != null) {
+          String verseText = verse.text.length > 100
+              ? '${verse.text.substring(0, 100)}...'
+              : verse.text;
 
-        // Schedule for 7:00 AM
-        // If today is past 7 AM, schedule for tomorrow (handled by date iteration logic partially,
-        // but we need to set the time correctly)
+          // Schedule for 7:00 AM
+          var scheduledDate = tz.TZDateTime(
+            tz.local,
+            date.year,
+            date.month,
+            date.day,
+            7, // 7:00 AM
+            0,
+          );
 
-        var scheduledDate = tz.TZDateTime(
-          tz.local,
-          date.year,
-          date.month,
-          date.day,
-          7, // 7:00 AM
-          0,
-        );
+          if (scheduledDate.isBefore(tz.TZDateTime.now(tz.local))) {
+            continue;
+          }
 
-        // If the scheduled time for today has passed, skip it (or schedule for next year, but we are iterating days)
-        // Actually, if we are at i=0 (today) and it's 8 AM, scheduling for 7 AM today will throw or fire immediately depending on settings.
-        // zonedSchedule with matchDateTimeComponents usually handles repeating, but here we are scheduling one-offs for specific dates.
-        // So if i=0 and it's past 7 AM, we should probably skip today or schedule for tomorrow (which is i=1).
-        // Let's just check if it's in the past.
-
-        if (scheduledDate.isBefore(tz.TZDateTime.now(tz.local))) {
-          continue;
-        }
-
-        await _notifications.zonedSchedule(
-          i, // Unique ID for each day
-          'Daily Bread - Verse of the Day',
-          verseText,
-          scheduledDate,
-          const NotificationDetails(
-            android: AndroidNotificationDetails(
-              'daily_verse',
-              'Daily Verse',
-              channelDescription: 'Daily verse notifications',
-              importance: Importance.high,
-              priority: Priority.high,
+          await _notifications.zonedSchedule(
+            i, // Unique ID for each day
+            'Daily Bread - Verse of the Day',
+            verseText,
+            scheduledDate,
+            const NotificationDetails(
+              android: AndroidNotificationDetails(
+                'daily_verse',
+                'Daily Verse',
+                channelDescription: 'Daily verse notifications',
+                importance: Importance.high,
+                priority: Priority.high,
+              ),
+              iOS: DarwinNotificationDetails(),
             ),
-            iOS: DarwinNotificationDetails(),
-          ),
-          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-          uiLocalNotificationDateInterpretation:
-              UILocalNotificationDateInterpretation.absoluteTime,
-          // We do NOT use matchDateTimeComponents because we want specific content for specific days
-        );
+            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+            uiLocalNotificationDateInterpretation:
+                UILocalNotificationDateInterpretation.absoluteTime,
+          );
+          scheduledCount++;
+          print("Scheduled notification for $dateStr: $verseText");
+        } else {
+          print("No verse found for $dateStr, skipping notification.");
+        }
+      } catch (e) {
+        print("Error scheduling notification for day $i: $e");
       }
     }
+    print("Total notifications scheduled: $scheduledCount");
   }
 
   // Cancel all notifications

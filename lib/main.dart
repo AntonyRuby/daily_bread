@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:daily_bread/services/data_service.dart';
 import 'package:daily_bread/services/bookmark_service.dart';
 import 'package:daily_bread/models/verse.dart';
@@ -12,12 +13,20 @@ import 'package:daily_bread/pages/bookmarks_page.dart';
 import 'package:daily_bread/services/language_service.dart';
 import 'package:daily_bread/services/notification_service.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
+  try {
   WidgetsFlutterBinding.ensureInitialized();
-  await LanguageService().loadLocale();
-  await DataService().loadData(locale: LanguageService().currentLocale.languageCode);
-  await NotificationService.scheduleNotifications();
+    await LanguageService().loadLocale();
+    await initializeDateFormatting('ta', null); // Initialize Tamil date formatting
+    await DataService()
+        .loadData(locale: LanguageService().currentLocale.languageCode);
+    await NotificationService.scheduleNotifications();
+  } catch (e) {
+    print("Error during app initialization: $e");
+  }
   runApp(const DailyBreadApp());
 }
 
@@ -31,7 +40,18 @@ class DailyBreadApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: "Daily Bread",
+          onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+          locale: LanguageService().currentLocale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('ta'),
+          ],
           theme: ThemeData(
             useMaterial3: true,
             colorScheme: ColorScheme.fromSeed(
@@ -45,7 +65,7 @@ class DailyBreadApp extends StatelessWidget {
             appBarTheme: AppBarTheme(
               centerTitle: true,
               elevation: 2,
-              shadowColor: Colors.black.withOpacity(0.1),
+              shadowColor: Colors.black.withValues(alpha: 0.1),
               backgroundColor: const Color(0xFF6A1B9A),
               foregroundColor: Colors.white,
               titleTextStyle: const TextStyle(
@@ -58,7 +78,7 @@ class DailyBreadApp extends StatelessWidget {
             ),
             cardTheme: CardTheme(
               elevation: 4,
-              shadowColor: Colors.black.withOpacity(0.1),
+              shadowColor: Colors.black.withValues(alpha: 0.1),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -101,9 +121,9 @@ class DailyBreadApp extends StatelessWidget {
             ),
             navigationBarTheme: NavigationBarThemeData(
               elevation: 8,
-              shadowColor: Colors.black.withOpacity(0.1),
+              shadowColor: Colors.black.withValues(alpha: 0.1),
               backgroundColor: Colors.white,
-              indicatorColor: const Color(0xFF6A1B9A).withOpacity(0.15),
+              indicatorColor: const Color(0xFF6A1B9A).withValues(alpha: 0.15),
               labelTextStyle: WidgetStateProperty.all(
                 const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
               ),
@@ -224,37 +244,38 @@ class _MainScreenState extends State<MainScreen>
     final dateString = DateFormat("yyyy-MM-dd").format(_currentDate);
     final verse = DataService().getVerse(dateString);
     final saint = DataService().getSaintForDate(dateString);
+    final isTamil = LanguageService().currentLocale.languageCode == 'ta';
 
     // Fallback if data is missing for the specific date
     if (verse == null || saint == null) {
       return Scaffold(
-          appBar: AppBar(title: const Text("Thought for the day")),
-          body: const Center(child: Text("No data available for this date.")));
+          appBar: AppBar(title: Text(AppLocalizations.of(context)!.thoughtForTheDay)),
+          body: Center(child: Text(isTamil ? "இந்த தேதிக்கான தரவு இல்லை." : "No data available for this date.")));
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thought for the day'),
+        title: Text(AppLocalizations.of(context)!.thoughtForTheDay),
         actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.language),
-            onSelected: (String value) async {
-              final locale = Locale(value);
-              await LanguageService().setLocale(locale);
-              await DataService().reloadForLocale(value);
-              setState(() {}); // Rebuild UI with new data
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
-                value: 'en',
-                child: Text('English'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'ta',
-                child: Text('தமிழ் (Tamil)'),
-              ),
-            ],
-          ),
+          // PopupMenuButton<String>(
+          //   icon: const Icon(Icons.language),
+          //   onSelected: (String value) async {
+          //     final locale = Locale(value);
+          //     await LanguageService().setLocale(locale);
+          //     await DataService().reloadForLocale(value);
+          //     setState(() {}); // Rebuild UI with new data
+          //   },
+          //   itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+          //     const PopupMenuItem<String>(
+          //       value: 'en',
+          //       child: Text('English'),
+          //     ),
+          //     const PopupMenuItem<String>(
+          //       value: 'ta',
+          //       child: Text('தமிழ் (Tamil)'),
+          //     ),
+          //   ],
+          // ),
           IconButton(
             icon: const Icon(Icons.calendar_today),
             onPressed: () => _selectDate(context),
@@ -272,9 +293,9 @@ class _MainScreenState extends State<MainScreen>
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth > 600) {
-            return _buildLandscape(context, verse, saint);
+            return _buildLandscape(context, verse, saint, isTamil);
           } else {
-            return _buildPortrait(context, verse, saint);
+            return _buildPortrait(context, verse, saint, isTamil);
           }
         },
       ),
@@ -284,22 +305,22 @@ class _MainScreenState extends State<MainScreen>
         },
         selectedIndex:
             0, // Always 0 as these act as actions, not persistent tabs in this design
-        destinations: const <Widget>[
+        destinations: <Widget>[
           NavigationDestination(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home),
+            label: AppLocalizations.of(context)!.home,
           ),
           NavigationDestination(
-            icon: Icon(Icons.menu_book),
-            label: 'Readings',
+            icon: const Icon(Icons.menu_book),
+            label: AppLocalizations.of(context)!.readings,
           ),
           NavigationDestination(
-            icon: Icon(Icons.person),
-            label: 'Saints',
+            icon: const Icon(Icons.person),
+            label: AppLocalizations.of(context)!.saints,
           ),
           NavigationDestination(
-            icon: Icon(Icons.book),
-            label: 'Bible',
+            icon: const Icon(Icons.book),
+            label: AppLocalizations.of(context)!.bible,
           ),
         ],
       ),
@@ -356,7 +377,7 @@ class _MainScreenState extends State<MainScreen>
     }
   }
 
-  Widget _buildPortrait(BuildContext context, Verse verse, Saint saint) {
+  Widget _buildPortrait(BuildContext context, Verse verse, Saint saint, bool isTamil) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -364,7 +385,7 @@ class _MainScreenState extends State<MainScreen>
           end: Alignment.bottomCenter,
           colors: [
             Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.primary.withOpacity(0.05),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
           ],
         ),
       ),
@@ -377,24 +398,24 @@ class _MainScreenState extends State<MainScreen>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
                 ],
               ),
             ),
             child: Column(
               children: [
-                Text(
-                  DateFormat("EEEE").format(_currentDate),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.2,
-                      ),
-                ),
+                  Text(
+                    DateFormat("EEEE", isTamil ? "ta" : "en_US").format(_currentDate),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.2,
+                        ),
+                  ),
                 const SizedBox(height: 4),
                 Text(
-                  DateFormat("dd MMMM yyyy").format(_currentDate),
+                  DateFormat("dd MMMM yyyy", isTamil ? "ta" : "en_US").format(_currentDate),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
@@ -413,7 +434,7 @@ class _MainScreenState extends State<MainScreen>
                   child: Card(
                     elevation: 6,
                     shadowColor:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -429,7 +450,7 @@ class _MainScreenState extends State<MainScreen>
                             Theme.of(context)
                                 .colorScheme
                                 .primary
-                                .withOpacity(0.02),
+                                .withValues(alpha: 0.02),
                           ],
                         ),
                       ),
@@ -459,7 +480,7 @@ class _MainScreenState extends State<MainScreen>
                               ElevatedButton.icon(
                                 onPressed: () => Share.share(verse.text),
                                 icon: const Icon(Icons.share, size: 18),
-                                label: const Text('Share'),
+                                label: Text(AppLocalizations.of(context)!.share),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
                                       Theme.of(context).colorScheme.secondary,
@@ -475,14 +496,16 @@ class _MainScreenState extends State<MainScreen>
                                       : Icons.bookmark_border,
                                   size: 18,
                                 ),
-                                label: Text(_isBookmarked ? 'Saved' : 'Save'),
+                                label: Text(_isBookmarked
+                                    ? AppLocalizations.of(context)!.saved
+                                    : AppLocalizations.of(context)!.save),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: _isBookmarked
                                       ? Theme.of(context).colorScheme.primary
                                       : Theme.of(context)
                                           .colorScheme
                                           .primary
-                                          .withOpacity(0.1),
+                                          .withValues(alpha: 0.1),
                                   foregroundColor: _isBookmarked
                                       ? Colors.white
                                       : Theme.of(context).colorScheme.primary,
@@ -505,7 +528,7 @@ class _MainScreenState extends State<MainScreen>
             child: Card(
               elevation: 6,
               shadowColor:
-                  Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -520,11 +543,11 @@ class _MainScreenState extends State<MainScreen>
                     borderRadius: BorderRadius.circular(16),
                     gradient: LinearGradient(
                       colors: [
-                        Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
                         Theme.of(context)
                             .colorScheme
                             .secondary
-                            .withOpacity(0.05),
+                            .withValues(alpha: 0.05),
                       ],
                     ),
                   ),
@@ -535,7 +558,7 @@ class _MainScreenState extends State<MainScreen>
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -555,7 +578,7 @@ class _MainScreenState extends State<MainScreen>
                                 color: Theme.of(context)
                                     .colorScheme
                                     .primary
-                                    .withOpacity(0.1),
+                                    .withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(
@@ -573,7 +596,7 @@ class _MainScreenState extends State<MainScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Saint of the Day",
+                              AppLocalizations.of(context)!.saintOfTheDay,
                               style: Theme.of(context)
                                   .textTheme
                                   .labelSmall
@@ -614,7 +637,7 @@ class _MainScreenState extends State<MainScreen>
     );
   }
 
-  Widget _buildLandscape(BuildContext context, Verse verse, Saint saint) {
+  Widget _buildLandscape(BuildContext context, Verse verse, Saint saint, bool isTamil) {
     return Row(
       children: [
         Expanded(
@@ -623,7 +646,7 @@ class _MainScreenState extends State<MainScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                DateFormat("EEEE, dd MMMM yyyy").format(_currentDate),
+                DateFormat("EEEE, dd MMMM yyyy", isTamil ? "ta" : "en_US").format(_currentDate),
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
