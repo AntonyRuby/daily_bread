@@ -1,0 +1,2 @@
+/Users/antonyrubyalexiaa/Flutter_app/daily_bread/android/app/.cxx/RelWithDebInfo/1l4641w1/x86_64/CMakeFiles/edit_cache.dir
+/Users/antonyrubyalexiaa/Flutter_app/daily_bread/android/app/.cxx/RelWithDebInfo/1l4641w1/x86_64/CMakeFiles/rebuild_cache.dir
